@@ -3,6 +3,10 @@
 int READLINE_READ_SIZE = 1024;
 char *storage = NULL;
 
+void malloc_error()
+{
+    perror("Unable to allocate memory");
+}
 
 int find_nl_index(const char *s)
 {
