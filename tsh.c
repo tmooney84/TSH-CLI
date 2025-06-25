@@ -11,7 +11,8 @@ enum Type
     UNKNOWN = 0,
     PROG,
     FLAG_ARG,
-    STRING_ARG,
+    REG_ARG,
+    STR_ARG,
     EXE
 };
 
@@ -128,6 +129,71 @@ void tokenize_input(char *string, int string_len, Token_List *list, int num_toke
     return list;
 }
 
+enum Type classify_tok(char *tok, int tok_len, int tok_num)
+{
+    // UNKNOWN = 0
+    if (tok == NULL)
+    {
+        return UNKNOWN;
+    }
+
+    // PROG
+    if (tok_num == 0 && ((tok[0] >= 'A' && tok[0] <= 'Z') || (tok[0] >= 'a' && tok[0] <= 'z')))
+    {
+        return PROG;
+    }
+
+    // EXE
+    else if (tok_num == 0 && (tok[0] == '.' && tok[1] == '/'))
+    {
+        return EXE;
+    }
+
+    // FLAG_ARG
+    else if (tok_num > 1 && tok[0] == '-')
+    {
+        return FLAG_ARG
+    }
+
+    // REG_ARG
+    else if (tok_num > 1 && tok[0] != '-' && tok[0] != '"')
+    {
+        return REG_ARG;
+    }
+
+    // STR_ARG
+    else if (tok_num > 1 && tok[0] == '"' && tok[tok_len - 1] == '"')
+    {
+        return REG_ARG;
+    }
+
+    return UNKNOWN;
+}
+
+void classify_lex_toks(Token_List *list, int num_tokens)
+{
+    for (int i = 0; i < num_tokens; i++)
+    {
+        list->tokens[i]->lex_type = classify_tok(list->tokens[i]->tok_str, list->tokens[i]->tok_len, i);
+    }
+}
+
+Token_List *parse_command(const char *string, int string_len)
+{
+    int num_tokens = count_tokens(string, string_len);
+    Token_List *list = build_token_list(string, string_len, num_tokens);
+    if (!list)
+    {
+        malloc_error();
+        ///!!! Make sure the stuff in build_token_list???
+        return NULL;
+    }
+    tokenize_input(string, string_len, list, num_tokens);
+    classify_lex_toks(list, num_tokens);
+
+    return list;
+}
+
 int main(void)
 {
     /*LOOP
@@ -152,6 +218,7 @@ int main(void)
             continue;
         }
 
+        int string_len = strlen(input_string);
 
         //Parse: Separate the command string into a program and arguments (Lexer - AST???)
 
@@ -160,95 +227,27 @@ int main(void)
             //>>> if single token, check if what is typed into the prompt is a folder name, cd to that folder ;; this will match zsh
             // else separate into program and arguments... don't need to worry about pipes and redirection, so do I need AST?
 
-    //parse_input
-    //????????Token_List *parse_command(const char *string, int string_length, int num_tokens)
-    parse_input::could encapsulate this entire section below
-
-        int string_len = strlen(string);
-        
-        int num_tokens = count_tokens(char *string, int string_len);
-
-        Token_List *input_toks = build_token_list(input_string, string_len, num_tokens);
-
-        tokenize_input(input_string, string_len, list, num_tokens);
-
-        if(classify_lex_toks(list, num_tokens) != 0)
+        //parse_input
+        Token_List *tokens_list = parse_command(input_string, string_len);
+        if(!tokens_list)
         {
-
-        }
-
-        //int classify_lex_toks(Token_List *list, int num_tokens)
-        {
-            for(int i = 0; i < num_tokens; i++)
-            {
-                list->tokens[i]->lex_type = classify_tok(list->tokens[i]->tok_str, tok_len, i);
-            }
+            perror("Unable to build Tokens List\n");
+            free(cwd);
+            free(input_string);
+            return EXIT_FAILURE;
         }
 
 
 
-        }
-                enum Type classify_tok(char *tok, int tok_len, int tok_num)
-                {
-                    //UNKNOWN = 0
-                    
-                    //PROG
-                    if(tok_num == 0 && ((tok[0] >= 'A' && tok[0] <= 'Z') || (tok[0] >= 'a' && tok[0] <= 'z')))
-                    {
-                        return PROG; 
-                    }
-                    
-                    //FLAG_ARG
-
-                    //STRING_ARG
-
-                    //EXE
-                
-                    return UNKNOWN;
-                }
-
-enum Type
-{
-    UNKNOWN = 0,
-    PROG,
-    FLAG_ARG,
-    STRING_ARG,
-    EXE
-};
 
 
-
-
-
-
-        char **parse_command(char *input_string)
-        {
-            //tokenize_string(input_string);
-
-
-            //
-            // -flag arg
-
-            // ./name_of_cmd -arg -arg "dsfdssda"
-
-
-            // -string arg
-            // program
-
-
+    }
 
 
             }
 
 
         //will need & to access in called function
-        char **tokens_list = parse_string/lexer-ast(input_string, INPUT_STRING_LENGTH, &num_tokens)?
-        if (!tokens_list)
-        {
-            error_message?();
-            free(input_string);
-            continue; ???
-        }
 
 
         //Execute: Run the parsed command >>> differentiate process creation with binary and built-in commands
