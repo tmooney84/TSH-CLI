@@ -8,7 +8,32 @@
 // #include <sys/stat.h>
 // #include <string.h> 
 
-// void malloc_error();
+#include <unistd.h>
+#include <string.h>
+
+#define SIZE 255
+
+//b_fn table hash map structure
+typedef const struct Command{
+    const char *cmd; //!!! should this be the function pointer instead?
+    void *func; //generic pointer to be cast b4 calling
+}Command;
+
+Command table[] = {
+    {"cd", run_cd},
+    {"echo", run_echo},
+    {"setenv", run_setenv},
+    {"unsetenv", run_unsetenv},
+    {"env", run_env},
+    {"exit", run_exit},
+    {"pwd", run_pwd},
+    {"which", run_which}
+};
+
+
+void no_command(const char *com_string);
+
+    // void malloc_error();
 // int compare_ints(const void *a, const void *b);
 // int find_nl_index(const char *s);
 // char *combine_str_and_free_first(char *s1, char *s2, int len2);

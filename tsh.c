@@ -4,6 +4,8 @@
 #include <dirent.h>
 #include <string.h>
 
+#include "builtin_cmds.h"
+
 #define MAX_TOKEN_SIZE 255
 
 enum Type
@@ -152,7 +154,7 @@ enum Type classify_tok(char *tok, int tok_len, int tok_num)
     // FLAG_ARG
     else if (tok_num > 1 && tok[0] == '-')
     {
-        return FLAG_ARG
+        return FLAG_ARG;
     }
 
     // REG_ARG
@@ -196,6 +198,12 @@ Token_List *parse_command(const char *string, int string_len)
 
 int main(void)
 {
+    //build lookup table
+    static B_Table *b_lookup_table = {NULL};
+    b_lookup_table = build_b_table(b_lookup_table);
+
+
+
     /*LOOP
     while(quit_flag != 0)
     {
@@ -220,11 +228,16 @@ int main(void)
 
         int string_len = strlen(input_string);
 
-        //Parse: Separate the command string into a program and arguments (Lexer - AST???)
+        /*Parse: Separate the command string into a program and arguments (Lexer - AST???)
 
             // ./ >>> at beginning of token means execute following executable file (error)>>> tsh: persmission denied: ./file1.txt
             // >>> if single token that is equal to exit >>> make sure to exit;; may require kill processing of TSH shell
             //>>> if single token, check if what is typed into the prompt is a folder name, cd to that folder ;; this will match zsh
+            
+            //***with that single folder name check it after checking through the commands list, then 
+            can do the error:
+            zsh: command not found: adsf
+            
             // else separate into program and arguments... don't need to worry about pipes and redirection, so do I need AST?
 
         //parse_input
@@ -236,6 +249,8 @@ int main(void)
             free(input_string);
             return EXIT_FAILURE;
         }
+
+        */
 
 
 
@@ -252,7 +267,21 @@ int main(void)
 
         //Execute: Run the parsed command >>> differentiate process creation with binary and built-in commands
 
-
+     // if (is_builtin(command)) {
+    //     handle_builtin(command, args);
+    // } else {
+    //     pid_t pid = fork();
+    //     if (pid == 0) {
+    //         // child process
+    //         execvp(command, args);
+    //         perror("exec failed");
+    //         exit(EXIT_FAILURE);
+    //     } else {
+    //         // parent process
+    //         waitpid(pid, NULL, 0);
+    //     }
+    // }
+    // }   
 
 
 
