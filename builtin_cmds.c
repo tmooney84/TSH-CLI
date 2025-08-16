@@ -82,9 +82,20 @@ int run_cd(const char *path){
         return 0;
     }
     else{
-        perror("cd: no such file or directory: %s", path);
+        fprintf(stderr,"cd: no such file or directory: %s", path);
     }
     return -1;
+}
+
+int run_pwd(){
+    char *buf = malloc(BUF_SIZE* sizeof(char));
+    if(!buf){
+        malloc_error();
+        return -1;
+    }
+    char *wd = getcwd(buf, BUF_SIZE);
+    printf("%s\n", wd);
+    return 0;
 }
 
 //getenv???

@@ -11,6 +11,33 @@
 #include <sys/stat.h>
 #include <string.h> 
 
+#define MAX_TOKEN_SIZE 255
+
+enum Type
+{
+    UNKNOWN = 0,
+    PROG,
+    FLAG_ARG,
+    REG_ARG,
+    STR_ARG,
+    EXE
+};
+
+typedef struct lex_token
+{
+    enum Type lex_type;
+    char *tok_str;
+    int tok_len;
+} Lex_Token;
+
+typedef struct token_list
+{
+    Lex_Token **tokens;
+    int num_tokens;
+} Token_List;
+
+
+
 void malloc_error();
 int compare_ints(const void *a, const void *b);
 int find_nl_index(const char *s);

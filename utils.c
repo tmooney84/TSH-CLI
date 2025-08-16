@@ -123,7 +123,7 @@ void free_string_array(char **names, int num_names)
     free(names);
 }
 
-char **parse_string(const char *string, int string_length, int *num_tokens)
+char **parse_command(const char *string, int string_length, int *num_tokens)
 {
     int bufsize = TOK_BUFSIZE;
     int pos = 0;
@@ -138,7 +138,7 @@ char **parse_string(const char *string, int string_length, int *num_tokens)
 
     token = strtok_r(string, TOK_DELIM, &s_tok);
     while(token != NULL){
-        tokens[pos] = token; //pointer to begin of string set in array
+        tokens[pos] = token; 
         pos++;
 
         if(pos >= bufsize){
@@ -151,7 +151,7 @@ char **parse_string(const char *string, int string_length, int *num_tokens)
         }
         token = strtok_r(NULL, TOK_DELIM, &s_tok);
     }
-    tokens[pos] = NULL;
-    *num_tokens = pos;
+    tokens[pos] = NULL;  //creates a null terminated array
+    
     return tokens;
 }

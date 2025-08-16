@@ -11,9 +11,13 @@
 #include <string.h>
 #include <stdio.h>
 
-#define SIZE 255
+#define BUF_SIZE 255
 
-typedef enum{ARG_CD} ArgType;
+typedef enum{
+    ARG_CD = 2,
+    ARG_PWD = 1,
+
+} ArgType;
 
 //b_fn table hash map structure
 typedef struct Command{
@@ -30,7 +34,7 @@ Command table[] = {
     // {"unsetenv", run_unsetenv},
     // {"env", run_env},
     // {"exit", run_exit},
-    // {"pwd", run_pwd},
+    {"pwd", run_pwd},
     // {"which", run_which}
 };
 
