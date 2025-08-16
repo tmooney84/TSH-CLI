@@ -123,79 +123,35 @@ void free_string_array(char **names, int num_names)
     free(names);
 }
 
-//!!! JUST FOR INITIAL CONCEPTS
 char **parse_string(const char *string, int string_length, int *num_tokens)
 {
-    *num_tokens = 0;
-    int in_word = 0;
-
-    // how many substrings does the string contain
-    for (int i = 0; i < string_length && string[i] != '\0'; i++)
-    {
-        if (string[i] != ' ')
-        {
-            if (!in_word)
-            {
-                in_word = 1;
-                (*num_tokens)++;
-            }
-        }
-        else
-        {
-            in_word = 0;
-        }
+    int bufsize = TOK_BUFSIZE;
+    int pos = 0;
+    char **tokens = malloc(bufsize * sizeof(char *));
+    if(!tokens){
+        malloc_error();
+        exit(EXIT_FAILURE);
     }
 
-    // create array of empty strings
-    char **tokens_list = malloc(*num_tokens * sizeof(char *));
-    if (!tokens_list)
-    {
-        printf("Unable to read input\n");
-        return NULL;
-    }
-    memset(tokens_list, '\0', *num_tokens);
+    char *token;
+    char *s_tok;
 
-    for (int i = 0; i < *num_tokens; i++)
-    {
-        tokens_list[i] = malloc((string_length + 1) * (sizeof(char)));
-        if (!tokens_list)
-        {
-            printf("Unable to allocate memory.");
-            for (int j = 0; j < i; j++)
-            {
-                free(tokens_list[j]);
+    token = strtok_r(string, TOK_DELIM, &s_tok);
+    while(token != NULL){
+        tokens[pos] = token; //pointer to begin of string set in array
+        pos++;
+
+        if(pos >= bufsize){
+            bufsize += TOK_BUFSIZE;
+            tokens = realloc(tokens, bufsize *sizeof(char*));
+            if(!tokens){
+                malloc_error();
+                exit(EXIT_FAILURE);
             }
-            free(tokens_list);
-            return NULL;
         }
-        memset(tokens_list[i], '\0', (string_length + 1));
+        token = strtok_r(NULL, TOK_DELIM, &s_tok);
     }
-
-    // tokenize string into sub-strings in token_list
-    int ss_idx = 0; // substring index
-    in_word = 0;    // flag to indicate that currently iterating through word
-    for (int i = 0, j = 0; i < string_length && j < *num_tokens; i++)
-    {
-        if (string[i] != ' ')
-        {
-            if (in_word == 0)
-            {
-                in_word = 1;
-            }
-
-            tokens_list[j][ss_idx] = string[i];
-            ss_idx++;
-        }
-        else
-        {
-            if (in_word == 1)
-            {
-                j++;
-            }
-            in_word = 0;
-            ss_idx = 0;
-        }
-    }
-
-    return tokens_list;
+    tokens[pos] = NULL;
+    *num_tokens = pos;
+    return tokens;
 }

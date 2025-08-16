@@ -4,34 +4,42 @@
 // #include <stdlib.h>
 // #include <unistd.h>
 // #include <fcntl.h>
-// #include <stdio.h>
 // #include <sys/stat.h>
 // #include <string.h> 
 
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
 
 #define SIZE 255
 
+typedef enum{ARG_CD} ArgType;
+
 //b_fn table hash map structure
-typedef const struct Command{
+typedef struct Command{
     const char *cmd; //!!! should this be the function pointer instead?
     void *func; //generic pointer to be cast b4 calling
+    ArgType expected_type;
+    size_t arg_size;
 }Command;
 
 Command table[] = {
     {"cd", run_cd},
-    {"echo", run_echo},
-    {"setenv", run_setenv},
-    {"unsetenv", run_unsetenv},
-    {"env", run_env},
-    {"exit", run_exit},
-    {"pwd", run_pwd},
-    {"which", run_which}
+    // {"echo", run_echo},
+    // {"setenv", run_setenv},
+    // {"unsetenv", run_unsetenv},
+    // {"env", run_env},
+    // {"exit", run_exit},
+    // {"pwd", run_pwd},
+    // {"which", run_which}
 };
 
 
+
+
 void no_command(const char *com_string);
+int is_builtin(char *string);
+void run_command(const char *cmd);
 
     // void malloc_error();
 // int compare_ints(const void *a, const void *b);

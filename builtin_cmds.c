@@ -35,7 +35,7 @@ return hash & hashmask(bits);
 
 
 //check if string is in built-in function
-int is_built_in(char *string){
+int is_builtin(char *string){
     
 }
 
