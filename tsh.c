@@ -173,13 +173,12 @@
 // }
 
 char *get_cwd(){
-    char *buf = malloc(BUF_SIZE* sizeof(char));
+    char *buf = malloc(BUF_SIZE * sizeof(char));
     if(!buf){
         malloc_error();
         return NULL;
     }
     char *wd = getcwd(buf, BUF_SIZE);
-    printf("Absolute Working Directory: %s\n", wd); 
     
     int wd_size = strlen(wd);
 
@@ -262,7 +261,8 @@ int main(void)
 
 
 
-
+        free(cwd);
+        cwd = NULL;
     }
 
 

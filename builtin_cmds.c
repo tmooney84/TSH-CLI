@@ -1,37 +1,42 @@
 #include "builtin_cmds.h"
+#include "utils.h"
 
-//use coding algorithm from the book to have an equal distribution
-//p.18
-//8-bit: 2^8 to give 0-255 
-/*
-#define hashsize(n) ((unsigned long)1 << (n))
-#define hashmask(n) (hashsize(n) - 1)
-unsigned long oaat_code(char *key, unsigned long len, unsigned long bits) {
-unsigned long hash, i;
-for (hash = 0, i = 0; i < len; i++) {
-hash += key[i];
-hash += (hash << 10);
-hash ^= (hash >> 6);
-}
-hash += (hash << 3);
-hash ^= (hash >> 11);
-hash += (hash << 15);
-return hash & hashmask(bits);
-}
-*/
+// #ifndef UTILS_H
+// #define UTILS_H
 
-// int code(const char *string)
-// {
-//     int str_len = strlen(string);
-//     int sum = 0;
-     
-//     for(int i = 0; i < str_len; i++)
-//     {
-//         sum += string[i];
-//     }
+// #include <stdlib.h>
+// #include <fcntl.h>
+// #include <sys/stat.h>
 
-//     return sum % SIZE;
-// }
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+
+#define BUF_SIZE 255
+#define MAX_STR_LEN 255
+
+//ARG CONVERSION STRUCTS
+typedef struct {
+    char name [MAX_STR_LEN];
+}CD_Args;
+
+typedef struct {
+    char string [MAX_STR_LEN];
+}ECHO_Args;
+
+typedef struct {
+    char name [MAX_STR_LEN];
+    char value [MAX_STR_LEN];
+    int overwrite;
+}SETENV_Args;
+
+typedef struct {
+    char name [MAX_STR_LEN];
+}UNSETENV_Args;
+
+typedef struct {
+    char string_args [MAX_STR_LEN]; //will need further processing
+}WHICH_Args;
 
 
 //check if string is in built-in function
@@ -43,6 +48,138 @@ int is_builtin(char *string){
 void run_command(const char *cmd){
     
 }
+
+void no_command(const char *com_string){
+    printf("zsh: command not found: %s", com_string);
+}
+
+
+
+//FUNCTION IMPLMENTATIONS
+int run_cd_impl(const char *path){
+    const char* home_dir = getenv("HOME");
+    if(path == "" || path == " "){
+        if(chdir(path) == 0)
+        {
+            return 0;
+        }
+    }
+    else if(chdir(path) == 0){
+        return 0;
+    }
+    else{
+        fprintf(stderr,"cd: no such file or directory: %s", path);
+    }
+    return -1;
+}
+
+void run_echo_impl(){}
+void run_setenv_impl(){}
+void run_unsetenv_impl(){}
+void run_env_impl(){}
+void run_exit_impl(){}
+
+int run_pwd_impl(){
+    char *buf = malloc(BUF_SIZE* sizeof(char));
+    if(!buf){
+        malloc_error();
+        return -1;
+    }
+    else if(getcwd(buf, BUF_SIZE) == NULL)
+    {
+        perror("getcwd failed");
+        free(buf);
+        buf = NULL;
+        return -1;
+    }
+    printf("%s\n", buf);
+    free(buf);
+    buf = NULL;
+    return 0;
+}
+
+void run_which_impl(){}
+
+
+
+//FUNCTION WRAPPERS
+void run_cd_wrapper(void *args){
+    if(sizeof(args) < MAX_STR_LEN){
+        CD_Args *a = args;
+        run_cd_impl(a->name);
+        return;
+    }
+    else{
+        perror("Error: invalid path length\n");
+        return;
+    }
+}
+
+void run_echo_wrapper(){}
+void run_setenv_wrapper(){}
+void run_unsetenv_wrapper(){}
+void run_env_wrapper(){}
+void run_exit_wrapper(){}
+void run_pwd_wrapper(){}
+void run_which_wrapper(){}
+
+
+typedef enum{
+    ARG_CD = 2,
+    ARG_ECHO = 2,
+    ARG_SETENV = 4,
+    ARG_UNSETENV = 2,
+    ARG_ENV = 1,
+    ARG_EXIT = 1, 
+    ARG_PWD = 1,
+    ARG_WHICH = 2 //>>>needs to be variable... args until null... maybe parse char * pointers until then
+} ArgType;
+
+//Command Struct
+typedef struct Command{
+    const char *cmd; //!!! should this be the function pointer instead?
+    void *func; //generic pointer to be cast b4 calling
+    ArgType expected_type;
+    size_t arg_size;
+}Command;
+
+
+//Command Table
+Command table[] = {
+    {"cd", run_cd_wrapper, ARG_CD, sizeof(CD_Args)},
+    // {"echo", run_echo},
+    // {"setenv", run_setenv},
+    // {"unsetenv", run_unsetenv},
+    // {"env", run_env},
+    // {"exit", run_exit},
+    {"pwd", run_pwd_wrapper, ARG_PWD, 0},
+    // {"which", run_which}
+};
+
+void no_command(const char *com_string);
+int is_builtin(char *string);
+void run_command(const char *cmd);
+
+Command* find_command(const char *cmd){
+for(size_t i = 0; i < sizeof(table)/sizeof(table[0]); i++){
+    if(strcmp(cmd, table[i].cmd) == 0){
+        return &table[i];
+    }
+}
+    return NULL;
+}
+
+    // void malloc_error();
+// int compare_ints(const void *a, const void *b);
+// int find_nl_index(const char *s);
+// char *combine_str_and_free_first(char *s1, char *s2, int len2);
+// void init_my_readline();
+// char *my_readline(int fd);
+// void free_string_array(char **names, int num_names);
+
+// #endif
+
+
 
 
 
@@ -76,27 +213,7 @@ int env(const char *var_str){
 
 
 
-//cd --> chdir fn
-int run_cd(const char *path){
-    if(chdir(path) == 0){
-        return 0;
-    }
-    else{
-        fprintf(stderr,"cd: no such file or directory: %s", path);
-    }
-    return -1;
-}
 
-int run_pwd(){
-    char *buf = malloc(BUF_SIZE* sizeof(char));
-    if(!buf){
-        malloc_error();
-        return -1;
-    }
-    char *wd = getcwd(buf, BUF_SIZE);
-    printf("%s\n", wd);
-    return 0;
-}
 
 //getenv???
 
@@ -110,9 +227,11 @@ int run_pwd(){
 
 //int setenv(const char *envname, const char *envval, int overwrite);
 //    returns 0/-1
-int run_export(const char *var_str){
-    int setenv(env_name, var_str, ???)
-}
+
+//******** */
+// int run_export(const char *var_str){
+//     int setenv(env_name, var_str, ???)
+// }
 
 
 //unsetenv --> unsets environment
@@ -130,8 +249,6 @@ int run_export(const char *var_str){
 
 //which --> needs to find $PATH location... not sure
 //how to build appropriately yet
+// >>> if arg is builtin command: cd: shell built-in command
 
 
-void no_command(const char *com_string){
-    printf("zsh: command not found: %s", com_string);
-}
