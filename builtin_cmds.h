@@ -8,7 +8,7 @@
 // #include <string.h> 
 // #include <stdio.h>
 
-// #define BUF_SIZE 255
+#define BUF_SIZE 255
 
 // typedef enum{
 //     ARG_CD = 2,
@@ -16,13 +16,17 @@
 
 // } ArgType;
 
-// //b_fn table hash map structure
-// typedef struct Command{
-//     const char *cmd; //!!! should this be the function pointer instead?
-//     void *func; //generic pointer to be cast b4 calling
-//     ArgType expected_type;
-//     size_t arg_size;
-// }Command;
+//Command Struct
+typedef struct Command{
+    const char *cmd; //!!! should this be the function pointer instead?
+    CommandFunc func; //generic pointer to be cast b4 calling
+    ArgType expected_type;
+    size_t params_size;
+}Command;
+
+
+
+
 
 // Command table[] = {
 //     {"cd", run_cd},

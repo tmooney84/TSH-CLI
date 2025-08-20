@@ -17,25 +17,25 @@
 
 //ARG CONVERSION STRUCTS
 typedef struct {
-    char name [MAX_STR_LEN];
+    char *name;
 }CD_Args;
 
 typedef struct {
-    char string [MAX_STR_LEN];
+    char *string;
 }ECHO_Args;
 
 typedef struct {
-    char name [MAX_STR_LEN];
-    char value [MAX_STR_LEN];
-    int overwrite;
+    char *name;
+    char *value;
+    int overwrite; //>>> will need to atoi to have int
 }SETENV_Args;
 
 typedef struct {
-    char name [MAX_STR_LEN];
+    char *name;
 }UNSETENV_Args;
 
 typedef struct {
-    char string_args [MAX_STR_LEN]; //will need further processing
+    char *string_args; //will need further processing
 }WHICH_Args;
 
 
@@ -105,7 +105,7 @@ void run_which_impl(){}
 //FUNCTION WRAPPERS
 void run_cd_wrapper(void *args){
     if(sizeof(args) < MAX_STR_LEN){
-        CD_Args *a = args;
+        CD_Args *a = &args[1];
         run_cd_impl(a->name);
         return;
     }
@@ -116,19 +116,20 @@ void run_cd_wrapper(void *args){
 }
 
 void run_echo_wrapper(){}
-void run_setenv_wrapper(){}
+void run_setenv_wrapper(){} //***ADDITIONAL PROCESSING: need to parse the around the = to get the name and value args + need to check int overwrite???
 void run_unsetenv_wrapper(){}
 void run_env_wrapper(){}
 void run_exit_wrapper(){}
 void run_pwd_wrapper(){}
 void run_which_wrapper(){}
 
+typedef void (*CommandFunc)(void *);
 
 typedef enum{
     ARG_CD = 2,
     ARG_ECHO = 2,
-    ARG_SETENV = 4,
-    ARG_UNSETENV = 2,
+    ARG_EXPORT = 2,  //ARG_SETENV = 4,
+    ARG_UNSET = 2,   //ARG_UNSETENV = 2,
     ARG_ENV = 1,
     ARG_EXIT = 1, 
     ARG_PWD = 1,
@@ -138,9 +139,9 @@ typedef enum{
 //Command Struct
 typedef struct Command{
     const char *cmd; //!!! should this be the function pointer instead?
-    void *func; //generic pointer to be cast b4 calling
+    CommandFunc func; //generic pointer to be cast b4 calling
     ArgType expected_type;
-    size_t arg_size;
+    size_t params_size;
 }Command;
 
 
@@ -148,20 +149,20 @@ typedef struct Command{
 Command table[] = {
     {"cd", run_cd_wrapper, ARG_CD, sizeof(CD_Args)},
     // {"echo", run_echo},
-    // {"setenv", run_setenv},
-    // {"unsetenv", run_unsetenv},
+    {"export", run_setenv_wrapper, ARG_EXPORT, sizeof(SETENV_Args)},// {"setenv", run_setenv},
+    {"unset", run_unsetenv_wrapper, ARG_UNSET, sizeof(UNSETENV_Args)},
     // {"env", run_env},
     // {"exit", run_exit},
-    {"pwd", run_pwd_wrapper, ARG_PWD, 0},
+    {"pwd", run_pwd_wrapper, ARG_PWD, 0}
     // {"which", run_which}
 };
 
-void no_command(const char *com_string);
-int is_builtin(char *string);
 void run_command(const char *cmd);
 
-Command* find_command(const char *cmd){
-for(size_t i = 0; i < sizeof(table)/sizeof(table[0]); i++){
+int table_size = sizeof(table)/sizeof(table[0]);
+
+Command *find_command(const char *cmd){
+for(size_t i = 0; i < table_size; i++){
     if(strcmp(cmd, table[i].cmd) == 0){
         return &table[i];
     }

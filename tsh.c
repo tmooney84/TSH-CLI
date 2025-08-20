@@ -232,31 +232,44 @@ int main(void)
         //do I need this???
         int string_len = strlen(input_string);
 
-        /*Parse: Separate the command string into a program and arguments (Lexer - AST???)
+        //Parse: Separate the command string into a program and arguments (Lexer - AST???)
 
             // ./ >>> at beginning of token means execute following executable file (error)>>> tsh: persmission denied: ./file1.txt
             // >>> if single token that is equal to exit >>> make sure to exit;; may require kill processing of TSH shell
             //>>> if single token, check if what is typed into the prompt is a folder name, cd to that folder ;; this will match zsh
             
             //***with that single folder name check it after checking through the commands list, then 
-            can do the error:
-            zsh: command not found: adsf
+        //    can do the error:
+        //    zsh: command not found: adsf
             
             // else separate into program and arguments... don't need to worry about pipes and redirection, so do I need AST?
 
         //parse_input
 
-        int num_tokens
-        Token_List *tokens_list = parse_command(input_string, string_len, &num_tokens);
+        int num_tokens;
+        char **tokens_list = parse_command(input_string, string_len, &num_tokens);
         if(!tokens_list)
         {
             perror("Unable to build Tokens List\n");
             free(cwd);
+            cwd = NULL;
             free(input_string);
+            input_string = NULL;
             return EXIT_FAILURE;
         }
 
-        */
+        //Check if builtin function with tokens_list[0]
+        Command *bif = find_command(tokens_list[0]);
+        //go from tokens_list[1] until end and find size
+        if(bif != NULL && (bif->params_size == (num_tokens -1) * sizeof(char *)))
+        {
+            //execute built in function
+             
+            bif->func(&tokens_list[1]);
+
+        }
+
+
 
 
 

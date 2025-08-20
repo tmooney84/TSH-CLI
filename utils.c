@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include "utils.h"
 
 int READLINE_READ_SIZE = 1024;
@@ -123,7 +125,18 @@ void free_string_array(char **names, int num_names)
     free(names);
 }
 
-char **parse_command(const char *string, int string_length, int *num_tokens)
+void print_str_array(char **str){
+    int i = 0; 
+    while(str[i] != NULL){
+        printf("Token[%d]: %s\n", i, str[i]);
+        i++;
+    }
+    
+    return;
+}
+
+//char **parse_command(const char *string, int string_length, int *num_tokens)
+char **parse_command(char *string,  int *num_tokens)
 {
     int bufsize = TOK_BUFSIZE;
     int pos = 0;
@@ -137,6 +150,7 @@ char **parse_command(const char *string, int string_length, int *num_tokens)
     char *s_tok;
 
     token = strtok_r(string, TOK_DELIM, &s_tok);
+
     while(token != NULL){
         tokens[pos] = token; 
         pos++;
@@ -151,7 +165,45 @@ char **parse_command(const char *string, int string_length, int *num_tokens)
         }
         token = strtok_r(NULL, TOK_DELIM, &s_tok);
     }
+    *num_tokens = pos - 1;
+
+    printf("pos at end is: %d and num_tokens is: %d\n", pos, *num_tokens); //*********** */
+
     tokens[pos] = NULL;  //creates a null terminated array
     
     return tokens;
+}
+
+//TESTING ONLY//
+int main(void){
+    char **test_array = malloc(3 * sizeof(char*));
+    if(!test_array){
+        printf("Error!!!");
+    }
+    for(int i = 0; i < 4; i++){
+        test_array[i] = malloc(10 * sizeof(char));
+        if(!test_array[i]){
+            printf("Another Error");
+        }
+    }
+
+    strcpy(test_array[0], "Hey");
+    strcpy(test_array[1], "You");
+    strcpy(test_array[2], "Guys");
+    test_array[3] = NULL;
+
+    print_str_array(test_array);
+
+    char *test_input = malloc(255 * sizeof(char));
+    if(!test_input){
+        printf("Red Alert...Error.");
+    }
+
+    strcpy(test_input, "echo this message now");
+    int num_tokens;
+    char** tokens = parse_command(test_input, &num_tokens);
+    
+    print_str_array(tokens);
+
+    return 0;
 }
