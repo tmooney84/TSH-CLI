@@ -105,7 +105,7 @@ void run_which_impl(){}
 //FUNCTION WRAPPERS
 void run_cd_wrapper(void *args){
     if(sizeof(args) < MAX_STR_LEN){
-        CD_Args *a = &args[1];
+        CD_Args *a = args; //this is really tokens_list[1] bc passed this in
         run_cd_impl(a->name);
         return;
     }

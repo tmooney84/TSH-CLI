@@ -247,7 +247,13 @@ int main(void)
         //parse_input
 
         int num_tokens;
-        char **tokens_list = parse_command(input_string, string_len, &num_tokens);
+        int array_size;
+
+        /*
+        NEED TO UPDATE TO STRUCTURE FORMAT!!! start on line 256
+        */
+        //char **tokens_list = parse_command(input_string, &num_tokens, &array_size);
+        Tokens_List *tokens_list = parse_command(input_string, &num_tokens, &array_size);
         if(!tokens_list)
         {
             perror("Unable to build Tokens List\n");
@@ -266,14 +272,16 @@ int main(void)
             //execute built in function
              
             bif->func(&tokens_list[1]);
-
         }
 
 
 
 
+        /*
+        Need to create at struct to reflect  
+        free_string_array(, TOK_BUFSIZE)
 
-
+        */
         free(cwd);
         cwd = NULL;
     }

@@ -23,18 +23,19 @@ enum Type
     EXE
 };
 
-typedef struct lex_token
-{
-    enum Type lex_type;
-    char *tok_str;
-    int tok_len;
-} Lex_Token;
+// typedef struct lex_token
+// {
+//     enum Type lex_type;
+//     char *tok_str;
+//     int tok_len;
+// } Lex_Token;
 
-typedef struct token_list
+typedef struct 
 {
-    Lex_Token **tokens;
+    char **tokens;
     int num_tokens;
-} Token_List;
+    int array_size;
+}Tokens_List;
 
 
 

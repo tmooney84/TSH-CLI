@@ -135,9 +135,18 @@ void print_str_array(char **str){
     return;
 }
 
-//char **parse_command(const char *string, int string_length, int *num_tokens)
-char **parse_command(char *string,  int *num_tokens)
+/*
+    Need to update to Tokens_List Structure Format!!!
+*/
+//char **parse_command(const char *string, int *num_tokens, int *array_size)
+Tokens_List *parse_command(char *string,  int *num_tokens, int *array_size)
 {
+    Tokens_List *list = malloc(sizeof(Tokens_List));
+    if(!list){
+        malloc_error();
+        return NULL;
+    }
+
     int bufsize = TOK_BUFSIZE;
     int pos = 0;
     char **tokens = malloc(bufsize * sizeof(char *));
@@ -166,6 +175,7 @@ char **parse_command(char *string,  int *num_tokens)
         token = strtok_r(NULL, TOK_DELIM, &s_tok);
     }
     *num_tokens = pos - 1;
+    *array_size = bufsize;
 
     printf("pos at end is: %d and num_tokens is: %d\n", pos, *num_tokens); //*********** */
 
