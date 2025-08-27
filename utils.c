@@ -139,7 +139,7 @@ void print_str_array(char **str){
     Need to update to Tokens_List Structure Format!!!
 */
 //char **parse_command(const char *string, int *num_tokens, int *array_size)
-Tokens_List *parse_command(char *string,  int *num_tokens, int *array_size)
+Tokens_List *parse_command(char *string)
 {
     Tokens_List *list = malloc(sizeof(Tokens_List));
     if(!list){
@@ -149,8 +149,8 @@ Tokens_List *parse_command(char *string,  int *num_tokens, int *array_size)
 
     int bufsize = TOK_BUFSIZE;
     int pos = 0;
-    char **tokens = malloc(bufsize * sizeof(char *));
-    if(!tokens){
+    list->tokens = malloc(bufsize * sizeof(char *));
+    if(!list->tokens){
         malloc_error();
         exit(EXIT_FAILURE);
     }
@@ -161,27 +161,27 @@ Tokens_List *parse_command(char *string,  int *num_tokens, int *array_size)
     token = strtok_r(string, TOK_DELIM, &s_tok);
 
     while(token != NULL){
-        tokens[pos] = token; 
+        list->tokens[pos] = token; 
         pos++;
 
         if(pos >= bufsize){
             bufsize += TOK_BUFSIZE;
-            tokens = realloc(tokens, bufsize *sizeof(char*));
-            if(!tokens){
+            list->tokens = realloc(list->tokens, bufsize *sizeof(char*));
+            if(!list->tokens){
                 malloc_error();
                 exit(EXIT_FAILURE);
             }
         }
         token = strtok_r(NULL, TOK_DELIM, &s_tok);
     }
-    *num_tokens = pos - 1;
-    *array_size = bufsize;
+    list->num_tokens = pos - 1;
+    list->array_size = bufsize;
 
-    printf("pos at end is: %d and num_tokens is: %d\n", pos, *num_tokens); //*********** */
+    printf("pos at end is: %d and num_tokens is: %d\n", pos, list->num_tokens); //*********** */
 
-    tokens[pos] = NULL;  //creates a null terminated array
+    list->tokens[pos] = NULL;  //creates a null terminated array
     
-    return tokens;
+    return list;
 }
 
 //TESTING ONLY//
@@ -210,10 +210,12 @@ int main(void){
     }
 
     strcpy(test_input, "echo this message now");
-    int num_tokens;
-    char** tokens = parse_command(test_input, &num_tokens);
     
-    print_str_array(tokens);
+    Tokens_List *list = parse_command(test_input);
+    
+    print_str_array(list->tokens);
+
+    //free stuff normally
 
     return 0;
 }
