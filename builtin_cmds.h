@@ -1,5 +1,5 @@
-// #ifndef UTILS_H
-// #define UTILS_H
+#ifndef BUILTIN_CMDS_H
+#define BUILTIN_CMDS_H
 
 // #include <stdlib.h>
 // #include <unistd.h>
@@ -16,12 +16,25 @@
 
 // } ArgType;
 
+typedef void (*CommandFunc)(int, void *);
+
+typedef enum{
+    TOK_CD = 2,
+    TOK_ECHO = 2,
+    TOK_EXPORT = 2,  //ARG_SETENV = 4,
+    TOK_UNSET = 2,   //ARG_UNSETENV = 2,
+    TOK_ENV = 1,
+    TOK_EXIT = 1, 
+    TOK_PWD = 1,
+    TOK_WHICH = 2 //>>>needs to be variable... args until null... maybe parse char * pointers until then
+} TokType;
+
 //Command Struct
 typedef struct Command{
     const char *cmd; //!!! should this be the function pointer instead?
     CommandFunc func; //generic pointer to be cast b4 calling
-    ArgType expected_type;
-    size_t params_size;
+    TokType expected_type;
+    int params_size;
 }Command;
 
 
@@ -54,4 +67,4 @@ typedef struct Command{
 // // char *my_readline(int fd);
 // // void free_string_array(char **names, int num_names);
 
-// // #endif
+#endif

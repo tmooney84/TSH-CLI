@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "builtin_cmds.h"
 #include "utils.h"
 
@@ -27,33 +29,18 @@ typedef struct {
 typedef struct {
     char *name;
     char *value;
-    int overwrite; //>>> will need to atoi to have int
-}SETENV_Args;
+    //int overwrite; //>>> will need to atoi to have int
+}EXPORT_Args;
 
 typedef struct {
     char *name;
-}UNSETENV_Args;
+}UNSET_Args;
 
 typedef struct {
     char *string_args; //will need further processing
 }WHICH_Args;
 
-
-//check if string is in built-in function
-int is_builtin(char *string){
-    
-}
-
-
-void run_command(const char *cmd){
-    
-}
-
-void no_command(const char *com_string){
-    printf("zsh: command not found: %s", com_string);
-}
-
-
+typedef void (*CommandFunc)(int, void *);
 
 //FUNCTION IMPLMENTATIONS
 int run_cd_impl(const char *path){
@@ -77,7 +64,10 @@ void run_echo_impl(){}
 void run_setenv_impl(){}
 void run_unsetenv_impl(){}
 void run_env_impl(){}
-void run_exit_impl(){}
+
+void run_exit_impl(){
+    exit(EXIT_SUCCESS);
+}
 
 int run_pwd_impl(){
     char *buf = malloc(BUF_SIZE* sizeof(char));
@@ -103,8 +93,10 @@ void run_which_impl(){}
 
 
 //FUNCTION WRAPPERS
-void run_cd_wrapper(void *args){
-    if(sizeof(args) < MAX_STR_LEN){
+void run_cd_wrapper(int num_tokens, void *args){
+    printf("\nNumTokens: %d\n", num_tokens);
+
+    if(num_tokens == TOK_CD){
         CD_Args *a = args; //this is really tokens_list[1] bc passed this in
         run_cd_impl(a->name);
         return;
@@ -119,45 +111,41 @@ void run_echo_wrapper(){}
 void run_setenv_wrapper(){} //***ADDITIONAL PROCESSING: need to parse the around the = to get the name and value args + need to check int overwrite???
 void run_unsetenv_wrapper(){}
 void run_env_wrapper(){}
-void run_exit_wrapper(){}
-void run_pwd_wrapper(){}
+
+//***can actually have exit status fed into it
+void run_exit_wrapper(int num_tokens, void *args){
+    if(num_tokens == TOK_EXIT)
+    {
+        run_exit_impl();
+    }
+}
+
+void run_pwd_wrapper(int num_tokens, void *args){
+    if(num_tokens == TOK_PWD)
+    {
+        run_pwd_impl();
+    }
+}
 void run_which_wrapper(){}
 
-typedef void (*CommandFunc)(void *);
-
-typedef enum{
-    ARG_CD = 2,
-    ARG_ECHO = 2,
-    ARG_EXPORT = 2,  //ARG_SETENV = 4,
-    ARG_UNSET = 2,   //ARG_UNSETENV = 2,
-    ARG_ENV = 1,
-    ARG_EXIT = 1, 
-    ARG_PWD = 1,
-    ARG_WHICH = 2 //>>>needs to be variable... args until null... maybe parse char * pointers until then
-} ArgType;
-
-//Command Struct
-typedef struct Command{
-    const char *cmd; //!!! should this be the function pointer instead?
-    CommandFunc func; //generic pointer to be cast b4 calling
-    ArgType expected_type;
-    size_t params_size;
-}Command;
 
 
 //Command Table
 Command table[] = {
-    {"cd", run_cd_wrapper, ARG_CD, sizeof(CD_Args)},
+    {"cd", run_cd_wrapper, TOK_CD, sizeof(CD_Args)},
     // {"echo", run_echo},
-    {"export", run_setenv_wrapper, ARG_EXPORT, sizeof(SETENV_Args)},// {"setenv", run_setenv},
-    {"unset", run_unsetenv_wrapper, ARG_UNSET, sizeof(UNSETENV_Args)},
+    {"export", run_setenv_wrapper, TOK_EXPORT, sizeof(EXPORT_Args)},// {"setenv", run_setenv},
+    {"unset", run_unsetenv_wrapper, TOK_UNSET, sizeof(UNSET_Args)},
     // {"env", run_env},
-    // {"exit", run_exit},
-    {"pwd", run_pwd_wrapper, ARG_PWD, 0}
+    {"exit", run_exit_wrapper, TOK_EXIT, 0},
+    {"pwd", run_pwd_wrapper, TOK_PWD, 0}
     // {"which", run_which}
 };
 
-void run_command(const char *cmd);
+
+void no_command(const char *com_string){
+    printf("zsh: command not found: %s", com_string);
+}
 
 int table_size = sizeof(table)/sizeof(table[0]);
 
@@ -252,4 +240,46 @@ int env(const char *var_str){
 //how to build appropriately yet
 // >>> if arg is builtin command: cd: shell built-in command
 
+
+
+
+
+/*********************************************** */
+
+int main(void){
+    char *test_input = malloc(255 * sizeof(char));
+    if(!test_input){
+        printf("Red Alert...Error.");
+    }
+
+    //run_pwd_impl();
+
+    //strcpy(test_input, "cd prime");
+    //strcpy(test_input, "pwd");
+    strcpy(test_input, "exit");
+    
+    Tokens_List *list = parse_command(test_input);
+    if(!list){
+        printf("We got an error here...");
+    }
+
+    print_str_array(list->tokens);
+
+    //Check if builtin function with tokens_list[0]
+        Command *bif = find_command(list->tokens[0]);
+        //go from tokens_list[1] until end and find size
+        if(bif != NULL && (bif->params_size == (list->num_tokens - 1) * sizeof(char *)))
+        {
+            //execute built-in function
+            int num_tokens = list->num_tokens; 
+            bif->func(num_tokens, &list->tokens[1]);
+        }
+
+
+    //run_pwd_impl();
+
+    printf("Still running!!!");
+
+return 0;
+}
 

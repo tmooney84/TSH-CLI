@@ -37,7 +37,8 @@ typedef struct
     int array_size;
 }Tokens_List;
 
-
+Tokens_List *parse_command(char *string);
+void print_str_array(char **str);
 
 void malloc_error();
 int compare_ints(const void *a, const void *b);

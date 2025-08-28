@@ -253,8 +253,8 @@ int main(void)
         NEED TO UPDATE TO STRUCTURE FORMAT!!! start on line 256
         */
         //char **tokens_list = parse_command(input_string, &num_tokens, &array_size);
-        Tokens_List *tokens_list = parse_command(input_string, &num_tokens, &array_size);
-        if(!tokens_list)
+        Tokens_List *list = parse_command(input_string);
+        if(!list)
         {
             perror("Unable to build Tokens List\n");
             free(cwd);
@@ -265,13 +265,17 @@ int main(void)
         }
 
         //Check if builtin function with tokens_list[0]
-        Command *bif = find_command(tokens_list[0]);
+        Command *bif = find_command(list->tokens[0]);
         //go from tokens_list[1] until end and find size
-        if(bif != NULL && (bif->params_size == (num_tokens -1) * sizeof(char *)))
+        if(bif != NULL && (bif->params_size == (list->num_tokens - 1) * sizeof(char *)))
         {
-            //execute built in function
-             
-            bif->func(&tokens_list[1]);
+            //execute built-in function
+            bif->func(list->num_tokens, &list->tokens[1]);
+        }
+
+        //run non-built-in commands!!!
+        else{
+
         }
 
 

@@ -174,7 +174,7 @@ Tokens_List *parse_command(char *string)
         }
         token = strtok_r(NULL, TOK_DELIM, &s_tok);
     }
-    list->num_tokens = pos - 1;
+    list->num_tokens = pos;
     list->array_size = bufsize;
 
     printf("pos at end is: %d and num_tokens is: %d\n", pos, list->num_tokens); //*********** */
@@ -185,7 +185,7 @@ Tokens_List *parse_command(char *string)
 }
 
 //TESTING ONLY//
-int main(void){
+int test_main(void){
     char **test_array = malloc(3 * sizeof(char*));
     if(!test_array){
         printf("Error!!!");
@@ -197,19 +197,19 @@ int main(void){
         }
     }
 
-    strcpy(test_array[0], "Hey");
-    strcpy(test_array[1], "You");
-    strcpy(test_array[2], "Guys");
-    test_array[3] = NULL;
+    // strcpy(test_array[0], "Hey");
+    // strcpy(test_array[1], "You");
+    // strcpy(test_array[2], "Guys");
+    // test_array[3] = NULL;
 
-    print_str_array(test_array);
+    // print_str_array(test_array);
 
     char *test_input = malloc(255 * sizeof(char));
     if(!test_input){
         printf("Red Alert...Error.");
     }
 
-    strcpy(test_input, "echo this message now");
+    strcpy(test_input, "echo \"this message now\"");
     
     Tokens_List *list = parse_command(test_input);
     
