@@ -136,7 +136,8 @@ void print_str_array(char **str){
 }
 
 /*
-    Need to update to Tokens_List Structure Format!!!
+    Need to account for EXPORT and ECHO 
+    ^^^could potentially use conditionals
 */
 //char **parse_command(const char *string, int *num_tokens, int *array_size)
 Tokens_List *parse_command(char *string)
