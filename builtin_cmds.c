@@ -8,7 +8,8 @@ typedef struct
 
 typedef struct
 {
-    char *string;
+    char **strings;
+    int num_strings;
 } ECHO_Args;
 
 typedef struct
@@ -31,15 +32,15 @@ typedef struct
 // FUNCTION IMPLMENTATIONS
 int run_cd_impl(const char *path)
 {
-    if (path == NULL || strcmp(path, "") == 0)
+    if (path == NULL || strcmp(path, "") == 0 || strcmp(path, "~") == 0)
     {
-        const char *path = getenv("HOME");
-        if (!path)
+        const char *home = getenv("HOME");
+        if (!home)
         {
             perror("cd: HOME environment variable not set\n");
             return -1;
         }
-        if (chdir(path) == 0)
+        if (chdir(home) == 0)
         {
             return 0;
         }
@@ -55,7 +56,21 @@ int run_cd_impl(const char *path)
     return -1;
 }
 
-void run_echo_impl() {}
+void run_echo_impl(char **strings, int num_strings)
+{
+    if (strings == NULL || strcmp(strings[0], "") == 0)
+    {
+        printf("\n");
+    }
+    else
+    {
+        for (int i = 0; i < num_strings; i++)
+        {
+            printf("%s\n", strings[i]);
+        }
+    }
+}
+
 void run_setenv_impl() {}
 void run_unsetenv_impl() {}
 void run_env_impl() {}
@@ -108,7 +123,24 @@ void run_cd_wrapper(int num_tokens, void *args)
     }
 }
 
-void run_echo_wrapper() {}
+void run_echo_wrapper(int num_tokens, void *args)
+{
+    if (num_tokens >= TOK_ECHO)
+    {
+        ECHO_Args *a = malloc(sizeof(ECHO_Args));
+        if(!a){
+            malloc_error();
+            return;
+        }
+        a->strings = args;
+        a->num_strings = num_tokens - 1;
+        run_echo_impl(a->strings, a->num_strings);
+    }
+    else if (num_tokens == 1)
+    {
+        run_echo_impl(args, 0);
+    }
+}
 void run_setenv_wrapper() {} //***ADDITIONAL PROCESSING: need to parse the around the = to get the name and value args + need to check int overwrite???
 void run_unsetenv_wrapper() {}
 void run_env_wrapper() {}
