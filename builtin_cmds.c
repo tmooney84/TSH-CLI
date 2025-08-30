@@ -180,7 +180,6 @@ void run_cd_wrapper(int num_tokens, void *args)
         }
         run_cd_impl(a->name);
 
-        free(a);
         a = NULL;
         return;
     }
@@ -343,6 +342,10 @@ void run_which_wrapper(int num_tokens, void *args)
         free(a);
         a = NULL;
     }
+    else if(num_tokens == 1){
+        return;
+    }
+
     else
         {
             perror("ERROR: run_which_wrapper");
@@ -380,7 +383,3 @@ Command *find_command(const char *cmd)
     }
     return NULL;
 }
-
-// which --> needs to find $PATH location... not sure
-// how to build appropriately yet
-//  >>> if arg is builtin command: cd: shell built-in command

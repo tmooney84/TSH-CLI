@@ -110,11 +110,6 @@ int main(void)
         }
 
         Command *bif = find_command(list->tokens[0]);
-
-        // go from tokens_list[1] until end and find size
-       // int check_size = (int)(list->num_tokens - 1) * sizeof(char *);
-
-        //if (bif != NULL && (bif->params_size == check_size))
         if (bif != NULL)
         {
             // execute built-in function
