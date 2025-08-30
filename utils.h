@@ -13,23 +13,6 @@
 
 #define MAX_TOKEN_SIZE 255
 
-enum Type
-{
-    UNKNOWN = 0,
-    PROG,
-    FLAG_ARG,
-    REG_ARG,
-    STR_ARG,
-    EXE
-};
-
-// typedef struct lex_token
-// {
-//     enum Type lex_type;
-//     char *tok_str;
-//     int tok_len;
-// } Lex_Token;
-
 typedef struct 
 {
     char **tokens;

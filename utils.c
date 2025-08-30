@@ -198,13 +198,6 @@ int test_main(void){
         }
     }
 
-    // strcpy(test_array[0], "Hey");
-    // strcpy(test_array[1], "You");
-    // strcpy(test_array[2], "Guys");
-    // test_array[3] = NULL;
-
-    // print_str_array(test_array);
-
     char *test_input = malloc(255 * sizeof(char));
     if(!test_input){
         printf("Red Alert...Error.");
@@ -215,8 +208,6 @@ int test_main(void){
     Tokens_List *list = parse_command(test_input);
     
     print_str_array(list->tokens);
-
-    //free stuff normally
 
     return 0;
 }
