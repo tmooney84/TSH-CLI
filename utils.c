@@ -178,7 +178,7 @@ Tokens_List *parse_command(char *string)
     list->num_tokens = pos;
     list->array_size = bufsize;
 
-    printf("pos at end is: %d and num_tokens is: %d\n", pos, list->num_tokens); //*********** */
+    //printf("pos at end is: %d and num_tokens is: %d\n", pos, list->num_tokens); //*********** */
 
     list->tokens[pos] = NULL;  //creates a null terminated array
     

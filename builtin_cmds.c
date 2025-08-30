@@ -26,8 +26,42 @@ typedef struct
 
 typedef struct
 {
-    char *string_args; // will need further processing
+    char **string_args; // will need further processing
 } WHICH_Args;
+
+void find_executable(const char *cmd_name){
+   char *path_env = getenv("PATH");
+   if(!path_env){
+        perror("Error: PATH environmental variable not found.\n");
+        return;
+   }
+
+   char path_copy[MAX_PATH_LEN];
+   snprintf(path_copy, MAX_PATH_LEN, "%s", path_env);
+
+   char *dir = strtok(path_copy, ":");
+   int found = 0;
+
+   while(dir != NULL){
+    char full_path[MAX_PATH_LEN];
+    snprintf(full_path, MAX_PATH_LEN, "%s/%s", dir, cmd_name);
+   
+        if(access(full_path, X_OK) == 0){
+            printf("%s\n", full_path);
+            found = 1;
+            break;
+        }
+
+        dir = strtok(NULL, ":");
+    }
+
+    if(!found){
+        fprintf(stderr, "%s not found\n", cmd_name);
+    }
+
+    dir = NULL;
+    return;
+}
 
 // FUNCTION IMPLMENTATIONS
 int run_cd_impl(const char *path)
@@ -123,7 +157,15 @@ int run_pwd_impl()
     return 0;
 }
 
-void run_which_impl() {}
+void run_which_impl(int num_args, char **env_vars)
+{
+    for (int i = 0; i < num_args; i++)
+    {
+        find_executable(env_vars[i]);
+    }
+
+    return;
+}
 
 // FUNCTION WRAPPERS
 void run_cd_wrapper(int num_tokens, void *args)
@@ -282,7 +324,32 @@ void run_pwd_wrapper(int num_tokens, void *args)
 
     return;
 }
-void run_which_wrapper() {}
+void run_which_wrapper(int num_tokens, void *args)
+{
+    if (num_tokens >= TOK_WHICH && args != NULL)
+    {
+        WHICH_Args *a = malloc(sizeof(WHICH_Args));
+        if (!a)
+        {
+            malloc_error();
+            return;
+        }
+        char **input_args = (char **)args;
+        a->string_args = input_args;
+        int num_args = num_tokens - 1;
+        run_which_impl(num_args, input_args);
+        
+        input_args = NULL;
+        free(a);
+        a = NULL;
+    }
+    else
+        {
+            perror("ERROR: run_which_wrapper");
+        }
+
+    return;
+}
 
 // Command Table
 Command table[] = {
@@ -292,9 +359,8 @@ Command table[] = {
     {"unset", run_unsetenv_wrapper, TOK_UNSET, sizeof(UNSET_Args)},
     {"env", run_env_wrapper, TOK_ENV, 0},
     {"exit", run_exit_wrapper, TOK_EXIT, 0},
-    {"pwd", run_pwd_wrapper, TOK_PWD, 0}
-    // {"which", run_which}
-};
+    {"pwd", run_pwd_wrapper, TOK_PWD, 0},
+    {"which", run_which_wrapper, TOK_WHICH, sizeof(WHICH_Args)}};
 
 void no_command(const char *com_string)
 {

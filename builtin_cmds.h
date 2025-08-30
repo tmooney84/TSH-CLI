@@ -11,6 +11,7 @@
 
 #define MAX_STR_LEN 255
 #define BUF_SIZE 255
+#define MAX_PATH_LEN 1024
 
 extern char **environ;
 
