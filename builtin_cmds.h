@@ -12,6 +12,8 @@
 #define MAX_STR_LEN 255
 #define BUF_SIZE 255
 
+extern char **environ;
+
 typedef void (*CommandFunc)(int, void *);
 
 typedef enum{

@@ -71,9 +71,32 @@ void run_echo_impl(char **strings, int num_strings)
     }
 }
 
-void run_setenv_impl() {}
+void run_env_impl()
+{
+    /*SIMPLE PRINT VARIABLES IMPLEMENTATION*/
+    for (char **env = environ; *env != NULL; env++)
+    {
+        printf("%s\n", *env);
+    }
+}
+
+void run_setenv_impl(const char *name, const char *value)
+{
+    if (name == NULL || name == NULL || strcmp(name, "") || strcmp(value, ""))
+    {
+        // print out all environmental variables
+        run_env_impl();
+    }
+    else
+    {
+        if (setenv(name, value, 1) != 0)
+        {
+            perror("ERROR: run_setenv_impl");
+        }
+    }
+}
+
 void run_unsetenv_impl() {}
-void run_env_impl() {}
 
 void run_exit_impl()
 {
@@ -110,6 +133,8 @@ void run_cd_wrapper(int num_tokens, void *args)
     {
         CD_Args *a = args; // this is really tokens_list[1] bc passed this in
         run_cd_impl(a->name);
+
+        free(a);
         return;
     }
     else if (num_tokens == 1)
@@ -128,22 +153,53 @@ void run_echo_wrapper(int num_tokens, void *args)
     if (num_tokens >= TOK_ECHO)
     {
         ECHO_Args *a = malloc(sizeof(ECHO_Args));
-        if(!a){
+        if (!a)
+        {
             malloc_error();
             return;
         }
         a->strings = args;
         a->num_strings = num_tokens - 1;
         run_echo_impl(a->strings, a->num_strings);
+
+        free(a);
     }
     else if (num_tokens == 1)
     {
         run_echo_impl(args, 0);
     }
+    else
+    {
+        perror("ERROR: run_echo_wrapper\n");
+    }
 }
-void run_setenv_wrapper() {} //***ADDITIONAL PROCESSING: need to parse the around the = to get the name and value args + need to check int overwrite???
+void run_export_wrapper(int num_tokens, void *args)
+{
+    if (num_tokens == TOK_EXPORT)
+    {
+        EXPORT_Args *a = malloc(sizeof(ECHO_Args));
+        // need to parse around = sign
+        //parse name and value
+        run_setenv_impl()
+    }
+    else
+    {
+        perror("ERROR: run_export_wrapper\n");
+    }
+} //***ADDITIONAL PROCESSING: need to parse the around the = to get the name and value args + need to check int overwrite???
+
 void run_unsetenv_wrapper() {}
-void run_env_wrapper() {}
+
+void run_env_wrapper(int num_tokens, void *args) {
+   //*SIMPLE PRINT VARIABLES IMPLEMENTATION */ 
+    if(num_tokens == TOK_ENV){
+        run_env_impl();
+    }
+    else{
+        /*WOULD HAVE MORE SOPHISTICATION IN FULL IMPLEMENTATION*/
+        run_env_impl();
+    }
+}
 
 //***can actually have exit status fed into it
 void run_exit_wrapper(int num_tokens, void *args)
@@ -170,9 +226,9 @@ void run_which_wrapper() {}
 // Command Table
 Command table[] = {
     {"cd", run_cd_wrapper, TOK_CD, sizeof(CD_Args)},
-    // {"echo", run_echo},
-    {"export", run_setenv_wrapper, TOK_EXPORT, sizeof(EXPORT_Args)}, // {"setenv", run_setenv},
-    {"unset", run_unsetenv_wrapper, TOK_UNSET, sizeof(UNSET_Args)},
+    {"echo", run_echo_wrapper, TOK_ECHO, sizeof(ECHO_Args)},
+    //{"export", run_export_wrapper, TOK_EXPORT, sizeof(EXPORT_Args)}, // {"setenv", run_setenv},
+    //{"unset", run_unsetenv_wrapper, TOK_UNSET, sizeof(UNSET_Args)},
     // {"env", run_env},
     {"exit", run_exit_wrapper, TOK_EXIT, 0},
     {"pwd", run_pwd_wrapper, TOK_PWD, 0}
