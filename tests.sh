@@ -12,7 +12,7 @@ echo "------------------------------------------------------------------"
 
 mkdir test_dir
 
-echo "Linux Binary Commands Test"
+echo "TSH/MY_ZSH TESTING"
 echo ""
 echo "1) Example Binary Commands (Linux)"
 echo ""
