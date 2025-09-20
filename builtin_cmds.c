@@ -98,9 +98,33 @@ void run_echo_impl(char **strings, int num_strings)
     }
     else
     {
+        int first_flag = 0;
+        int last_flag = 0;
+        
+        int last_len = strlen(strings[num_strings - 1]);
+        
+        if(strings[0][0] == '"' && strings[num_strings - 1][last_len - 1] == '"'){
+                first_flag = 1; 
+                last_flag = 1;
+            }
+        //need to remove quotes and print on same line with space in between words
         for (int i = 0; i < num_strings; i++)
         {
-            printf("%s\n", strings[i]);
+            if( first_flag && i == 0)
+            {
+                printf("%s", strings[0] + 1);
+            }
+            else if(last_flag && i == num_strings - 1)
+            {
+                printf("%.*s\n", last_len - 1, strings[i]);
+            }
+            else
+                printf("%s", strings[i]);
+
+            if(i != num_strings -1)
+            {
+                printf(" ");
+            }
         }
     }
 }
