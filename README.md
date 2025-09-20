@@ -42,8 +42,49 @@ Run testing on TSH shell:
 ./tests.sh
 ```
 
-***tests.sh may need to be run two consecutive times for the env command test to function correctly
+Successful test results should look like this:
 
+TSH/MY_ZSH TESTING
+
+1) Example Binary Commands (Linux)
+
+  a) ls -l command
+  Files match!
+
+  b) cat <file> command
+  Files match!
+
+  c) date command
+  Files match!
+
+2) Built-In Commands (Linux)
+
+  a) cd command
+  Files match!
+
+  b) echo command
+  Files match!
+
+  c) export command
+  Files match...Export working correctly!
+
+  d) unset command
+  Files differ...Unset working correctly!
+
+  e) env command
+  Files match...Env working correctly!
+
+  f) exit command
+  Exit working correctly (status 0)
+
+  g) pwd command
+  Files match... pwd working correctly!
+
+  h) which command
+  Files match... which working correctly!
+
+
+***tests.sh may need to be run two consecutive times for the env command test to function correctly
 
 
 ### The Core Team
