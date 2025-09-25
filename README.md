@@ -15,19 +15,19 @@ Within the TSH shell:
 
 ## Installation
 
-Clone my_zsh repository using SSH
+Clone TSH-CLI repository using SSH
 ```
 git clone git@git.us.qwasar.io:my_zsh_186296_gyspfr/my_zsh.git
 ```
 
-Clone my_zsh repository using HTTPS
+Clone TSH-CLI repository using HTTPS
 ```
 git clone https://git.us.qwasar.io/my_zsh_186296_gyspfr/my_zsh.git
 ```
 
 Compile TSH shell:
 ```
-make TSH
+make tsh
 ```
 
 ## Usage
