@@ -1,6 +1,6 @@
 # Compiler
 CC      := gcc
-CFLAGS  := -Wall -Wextra -Werror -g
+CFLAGS  := -Wall -Wextra -Werror -g -D_POSIX_C_SOURCE=200809L
 
 # Target executable name
 TARGET  := tsh

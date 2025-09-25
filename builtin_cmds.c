@@ -1,34 +1,5 @@
 #include "builtin_cmds.h"
 
-// ARG CONVERSION STRUCTS
-typedef struct
-{
-    char *name;
-} CD_Args;
-
-typedef struct
-{
-    char **strings;
-    int num_strings;
-} ECHO_Args;
-
-typedef struct
-{
-    char *name;
-    char *value;
-    // int overwrite; //>>> will need to atoi to have int
-} EXPORT_Args;
-
-typedef struct
-{
-    char *name;
-} UNSET_Args;
-
-typedef struct
-{
-    char **string_args; // will need further processing
-} WHICH_Args;
-
 void find_executable(const char *cmd_name){
    char *path_env = getenv("PATH");
    if(!path_env){
