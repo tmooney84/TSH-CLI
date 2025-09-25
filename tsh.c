@@ -8,8 +8,6 @@
 #include "builtin_cmds.h"
 #include "utils.h"
 
-extern char **environ; 
-
 char *get_cwd()
 {
     char *buf = malloc(BUF_SIZE * sizeof(char));
@@ -51,7 +49,7 @@ int launch_command(char **args)
     if (pid == 0)
     {
         // Child Process
-        if (execve(args[0], args, environ) == -1)
+        if (execvp(args[0], args))
         {
             perror("tsh");
         }
@@ -137,4 +135,3 @@ int main(void)
     
     return 0;
 }
-
