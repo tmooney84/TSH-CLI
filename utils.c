@@ -24,7 +24,7 @@ int find_nl_index(const char *s)
     return -1;
 }
 
-char *combine_str_and_free_first(char *s1, char *s2, int len2)
+char *s_f_combine(char *s1, char *s2, int len2)
 {
     int len1 = 0;
     if (s1 != NULL)
@@ -89,13 +89,13 @@ char *my_readline(int fd)
 
         if (newline_index != -1)
         {
-            line = combine_str_and_free_first(line, buffer, newline_index);
+            line = s_f_combine(line, buffer, newline_index);
             storage = strdup(buffer + newline_index + 1);
             return line;
         }
         else
         {
-            line = combine_str_and_free_first(line, buffer, bytes_read);
+            line = s_f_combine(line, buffer, bytes_read);
         }
     }
 
