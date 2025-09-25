@@ -1,4 +1,4 @@
-# Welcome to My Zsh
+# Welcome to TSH-CLI
 ***
 
 ## Task
