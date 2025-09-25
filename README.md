@@ -1,4 +1,4 @@
-# Welcome to TSH-CLI
+# Welcome to TSH-CLI Shell
 ***
 
 ## Task
