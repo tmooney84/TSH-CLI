@@ -71,6 +71,10 @@ int launch_command(char **args)
         do
         {
           waitpid(pid, &status, WUNTRACED);
+          if (WIFSTOPPED(status)) {
+              printf("Process stopped by signal %d\n", WSTOPSIG(status));
+              break;
+          }
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
     }
 
