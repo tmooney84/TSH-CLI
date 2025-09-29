@@ -4,6 +4,8 @@
 #include <dirent.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <unistd.h>
+#include <signal.h>
 
 #include "builtin_cmds.h"
 #include "utils.h"
@@ -49,6 +51,9 @@ int launch_command(char **args)
     if (pid == 0)
     {
         // Child Process
+        signal(SIGINT, SIG_DFL);
+        signal(SIGTSTP, SIG_DFL);
+
         if (execvp(args[0], args))
         {
             perror("tsh");
@@ -74,6 +79,9 @@ int launch_command(char **args)
 
 int main(void)
 {
+    signal(SIGINT, SIG_IGN);   // Ignore Ctrl+C in shell
+    signal(SIGTSTP, SIG_IGN);  // Ignore Ctrl+Z in shell
+
     // LOOP
     while (1)
     {
